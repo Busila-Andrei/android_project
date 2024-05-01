@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:gravity="center"
+              android:padding="16dp" tools:ignore="ExtraText">
+	
+	<EditText
+			android:id="@+id/editTextFirstName"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:hint="First Name"
+			android:inputType="textCapWords"
+			tools:ignore="Autofill,HardcodedText"/>
+	
+	<EditText
+			android:id="@+id/editTextLastName"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:hint="Last Name"
+			android:inputType="textCapWords"
+			tools:ignore="Autofill,HardcodedText"/>
+	
+	<EditText
+			android:id="@+id/editTextEmail"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:inputType="textEmailAddress"
+			android:hint="Email"
+			tools:ignore="Autofill,HardcodedText"/>
+	
+	<EditText
+			android:id="@+id/editTextPassword"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:inputType="textPassword"
+			android:hint="Password"
+			tools:ignore="Autofill,HardcodedText"/>
+	
+	<TextView
+			android:id="@+id/passwordTooltip"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:text="Minimum 8 characters in length\nContains:\n- Uppercase Letters\n- Lowercase Letters\n- Numbers\n- Symbols"
+			android:textColor="#FF0000"
+			android:visibility="gone"
+			android:background="@android:color/white"
+			android:elevation="6dp"
+			android:padding="8dp"
+			android:textSize="12sp"
+			tools:ignore="HardcodedText"/>
+	
+	<Button
+			android:id="@+id/buttonRegister"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:text="Register"
+			tools:ignore="HardcodedText"/>
+	
+	<TextView
+			android:id="@+id/textViewMessage"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:textColor="@color/design_default_color_error"
+			android:visibility="gone"/>
+</LinearLayout>
