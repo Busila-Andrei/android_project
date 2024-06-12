@@ -18,16 +18,16 @@ import com.example.frontend.*;
 import com.example.frontend.config.ApiResponse;
 import com.example.frontend.config.ApiService;
 import com.example.frontend.config.RetrofitClient;
-import com.example.frontend.dto.LoginRequest;
+import com.example.frontend.data.dto.LoginRequest;
 import org.jetbrains.annotations.NotNull;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-
 public class LoginFragment extends Fragment {
     public interface OnLoginListener {
         void onLoginComplete();
+        void onRegisterSelected(); // Adăugat pentru a gestiona navigarea
     }
 
     private OnLoginListener listener;
@@ -56,10 +56,12 @@ public class LoginFragment extends Fragment {
         editTextPassword = view.findViewById(R.id.editTextPassword);
         textViewError = view.findViewById(R.id.textViewError);
         Button buttonLogin = view.findViewById(R.id.buttonLogin);
+        TextView textViewRegisterPrompt = view.findViewById(R.id.textViewRegisterPrompt);
 
         apiService = RetrofitClient.getApiService();
 
         buttonLogin.setOnClickListener(v -> authenticateUser());
+        textViewRegisterPrompt.setOnClickListener(v -> listener.onRegisterSelected());
 
         return view;
     }
@@ -81,7 +83,7 @@ public class LoginFragment extends Fragment {
         LoginRequest authRequest = new LoginRequest(email, password);
         Call<ApiResponse> call = apiService.loginAccount(authRequest);
 
-        call.enqueue(new Callback<ApiResponse>() {
+        call.enqueue(new Callback<>() {
 
             @Override
             public void onResponse(@NotNull Call<ApiResponse> call, @NotNull Response<ApiResponse> response) {

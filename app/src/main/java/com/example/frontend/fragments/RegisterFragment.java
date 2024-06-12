@@ -19,7 +19,7 @@ import com.example.frontend.config.ApiResponse;
 import com.example.frontend.config.ApiService;
 import com.example.frontend.R;
 import com.example.frontend.config.RetrofitClient;
-import com.example.frontend.dto.RegisterRequest;
+import com.example.frontend.data.dto.RegisterRequest;
 import org.jetbrains.annotations.NotNull;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -28,10 +28,10 @@ import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
 
-
 public class RegisterFragment extends Fragment {
     public interface OnRegisterListener {
         void onRegisterComplete(String req);
+        void onLoginSelected(); // Adăugat pentru a gestiona navigarea
     }
 
     private OnRegisterListener listener;
@@ -51,7 +51,7 @@ public class RegisterFragment extends Fragment {
         if (context instanceof OnRegisterListener) {
             listener = (OnRegisterListener) context;
         } else {
-            throw new RuntimeException(context + " must implement OnLoginListener");
+            throw new RuntimeException(context + " must implement OnRegisterListener");
         }
     }
 
@@ -67,6 +67,8 @@ public class RegisterFragment extends Fragment {
         textViewMessage = view.findViewById(R.id.textViewMessage);
         passwordTooltip = view.findViewById(R.id.passwordTooltip);
         Button buttonRegister = view.findViewById(R.id.buttonRegister);
+        TextView textViewLoginPrompt = view.findViewById(R.id.textViewLoginPrompt);
+
         editTextPassword.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) {
                 passwordTooltip.setVisibility(View.VISIBLE);
@@ -85,16 +87,14 @@ public class RegisterFragment extends Fragment {
             public void afterTextChanged(Editable s) {}
         });
         buttonRegister.setOnClickListener(v -> registerUser());
+        textViewLoginPrompt.setOnClickListener(v -> listener.onLoginSelected());
+
         return view;
     }
 
     private void updatePasswordTooltip(String password) {
         SpannableString tooltipText = new SpannableString(
-                "Minimum 8 characters in length\n" +
-                        "- Uppercase Letters\n" +
-                        "- Lowercase Letters\n" +
-                        "- Numbers\n" +
-                        "- Symbols");
+                getString(R.string.password_tooltip));
 
         int minLengthStart = 0;
         int minLengthEnd = "Minimum 8 characters in length".length();
@@ -165,21 +165,21 @@ public class RegisterFragment extends Fragment {
 
         RegisterRequest registerRequest = new RegisterRequest(firstname, lastname, email, password);
         Call<ApiResponse> call = apiService.createAccount(registerRequest);
-        call.enqueue(new Callback<ApiResponse>() {
+        call.enqueue(new Callback<>() {
 
             @Override
             public void onResponse(@NotNull Call<ApiResponse> call, @NotNull Response<ApiResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     listener.onRegisterComplete(editTextEmail.getText().toString());
                 } else {
-                    textViewMessage.setText("Registration Failed: " + response.code());
+                    textViewMessage.setText(String.format(getString(R.string.registration_failed_code), response.code()));
                     textViewMessage.setVisibility(View.VISIBLE);
                 }
             }
 
             @Override
             public void onFailure(@NotNull Call<ApiResponse> call, @NotNull Throwable t) {
-                textViewMessage.setText("Registration Failed: " + t.getMessage());
+                textViewMessage.setText(String.format(getString(R.string.registration_failed_message), t.getMessage()));
                 textViewMessage.setVisibility(View.VISIBLE);
             }
         });

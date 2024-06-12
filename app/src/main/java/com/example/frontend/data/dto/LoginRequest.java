@@ -1,4 +1,4 @@
-package com.example.frontend.dto;
+package com.example.frontend.data.dto;
 
 public class LoginRequest {
 

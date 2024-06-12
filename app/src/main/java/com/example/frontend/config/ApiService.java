@@ -1,13 +1,14 @@
 package com.example.frontend.config;
 
-import com.example.frontend.dto.EmailRequest;
-import com.example.frontend.dto.LoginRequest;
-import com.example.frontend.dto.RegisterRequest;
-import com.example.frontend.dto.TokenRequest;
+import com.example.frontend.data.dto.EmailRequest;
+import com.example.frontend.data.dto.LoginRequest;
+import com.example.frontend.data.dto.RegisterRequest;
+import com.example.frontend.data.dto.TokenRequest;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.Path;
 
 public interface ApiService {
 
@@ -23,7 +24,6 @@ public interface ApiService {
     @POST("api/v1/auth/resend-confirmation-email")
     Call<ApiResponse> resendConfirmationEmail(@Body EmailRequest emailRequest);
 
-    // New registration method
     @POST("api/v1/auth/login-account")
     Call<ApiResponse> loginAccount(@Body LoginRequest loginRequest);
 
@@ -33,6 +33,15 @@ public interface ApiService {
     @POST("api/v1/auth/logout-account")
     Call<ApiResponse> logoutAccount(@Body String tokenJson);
 
+    @GET("/api/v1/auth/words")
+    Call<ApiResponse> getWords();
 
+    @GET("/api/v1/auth/questions")
+    Call<ApiResponse> getQuestions();
 
+    @GET("/api/v1/auth/categories")
+    Call<ApiResponse> getCategories();
+
+    @GET("/api/v1/auth/subcategory/{categoryId}")
+    Call<ApiResponse> getSubcategories(@Path("categoryId") int categoryId);
 }

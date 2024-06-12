@@ -33,6 +33,7 @@ dependencies {
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.firebase.inappmessaging)
+    implementation(libs.androidx.recyclerview)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
@@ -47,4 +48,14 @@ dependencies {
     implementation(libs.converter.gson)
     implementation(libs.okhttp)
     implementation(libs.logging.interceptor)
+
+    // Room dependencies
+    implementation (libs.room.runtime)
+    annotationProcessor (libs.androidx.room.compiler)
+    implementation (libs.androidx.room.ktx)
+    implementation(libs.androidx.appcompat.v120)
+    implementation(libs.androidx.core.ktx)
+    implementation("com.google.code.gson:gson:2.10.1")
+
+
 }

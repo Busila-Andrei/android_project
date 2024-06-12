@@ -71,4 +71,9 @@ public class MainActivity extends AppCompatActivity implements
     public void onConfirmationComplete() {
         loadFragment(new LoginFragment());
     }
+
+    @Override
+    public void onBackToRegister() {
+        loadFragment(new RegisterFragment());
+    }
 }

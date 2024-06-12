@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
@@ -19,7 +20,7 @@ import com.example.frontend.config.ApiResponse;
 import com.example.frontend.config.ApiService;
 import com.example.frontend.R;
 import com.example.frontend.config.RetrofitClient;
-import com.example.frontend.dto.EmailRequest;
+import com.example.frontend.data.dto.EmailRequest;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -28,6 +29,7 @@ public class ConfirmationFragment extends Fragment {
 
     public interface OnConfirmationListener {
         void onConfirmationComplete();
+        void onBackToRegister(); // Adăugat pentru a gestiona navigarea înapoi la register
     }
 
     private OnConfirmationListener listener;
@@ -38,7 +40,7 @@ public class ConfirmationFragment extends Fragment {
     private int remainingTime = 60;
     private ApiService apiService;
 
-    private String email;
+    private final String email;
 
     public ConfirmationFragment(String email) {
         this.email = email;
@@ -50,7 +52,7 @@ public class ConfirmationFragment extends Fragment {
         if (context instanceof OnConfirmationListener) {
             listener = (OnConfirmationListener) context;
         } else {
-            throw new RuntimeException(context + " must implement OnLoginListener");
+            throw new RuntimeException(context + " must implement OnConfirmationListener");
         }
     }
 
@@ -60,6 +62,7 @@ public class ConfirmationFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_confirm_email, container, false);
         buttonResendEmail = view.findViewById(R.id.buttonResendEmail);
         textViewTimer = view.findViewById(R.id.textViewTimer);
+        ImageButton buttonClose = view.findViewById(R.id.buttonClose);
 
         apiService = RetrofitClient.getApiService();
 
@@ -68,6 +71,9 @@ public class ConfirmationFragment extends Fragment {
                 resendConfirmationEmail();
             }
         });
+
+        buttonClose.setOnClickListener(v -> listener.onBackToRegister());
+
         startTimerService();
         startAccountCheckService();
         return view;
@@ -96,7 +102,7 @@ public class ConfirmationFragment extends Fragment {
             @Override
             public void onFailure(@NonNull Call<ApiResponse> call, @NonNull Throwable t) {
                 if (isAdded()) {
-                    Toast.makeText(getActivity(), "Account check failed: " + t.getMessage(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), String.format(getString(R.string.account_check_failed), t.getMessage()), Toast.LENGTH_LONG).show();
                     scheduleNextCheck();
                 }
             }
@@ -122,8 +128,6 @@ public class ConfirmationFragment extends Fragment {
         timerHandler.postDelayed(checkRunnable, 5000); // Start după 5 secunde
     }
 
-
-
     private void resendConfirmationEmail() {
         EmailRequest request = new EmailRequest(email);
         Call<ApiResponse> call = apiService.resendConfirmationEmail(request);
@@ -132,17 +136,17 @@ public class ConfirmationFragment extends Fragment {
             @Override
             public void onResponse(@NonNull Call<ApiResponse> call, @NonNull Response<ApiResponse> response) {
                 if (response.isSuccessful() && response.body() != null && isAdded()) {
-                    Toast.makeText(getActivity(), "Resend successful: " + response.body().getMessage(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), String.format(getString(R.string.resend_successful), response.body().getMessage()), Toast.LENGTH_LONG).show();
                     startTimerService(); // Restart the timer after a successful resend
                 } else if (isAdded()) {
-                    Toast.makeText(getActivity(), "Resend failed: " + response.code(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), String.format(getString(R.string.resend_failed_code), response.code()), Toast.LENGTH_LONG).show();
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<ApiResponse> call, @NonNull Throwable t) {
                 if (isAdded()) {
-                    Toast.makeText(getActivity(), "Resend failed: " + t.getMessage(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), String.format(getString(R.string.resend_failed_message), t.getMessage()), Toast.LENGTH_LONG).show();
                 }
             }
         });

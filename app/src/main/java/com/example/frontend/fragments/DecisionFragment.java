@@ -31,7 +31,7 @@ public class DecisionFragment extends Fragment {
             loginListener = (OnLoginSelectedListener) context;
             registerListener = (OnRegisterSelectedListener) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString()
+            throw new ClassCastException(context
                     + " must implement OnLoginSelectedListener and OnRegisterSelectedListener");
         }
     }

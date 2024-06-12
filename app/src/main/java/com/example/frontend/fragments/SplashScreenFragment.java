@@ -19,14 +19,18 @@ import com.example.frontend.R;
 import com.example.frontend.config.ApiResponse;
 import com.example.frontend.config.ApiService;
 import com.example.frontend.config.RetrofitClient;
-import static android.content.Context.MODE_PRIVATE;
-
+import com.example.frontend.data.dto.TokenRequest;
+import org.jetbrains.annotations.NotNull;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static android.content.Context.MODE_PRIVATE;
+
 @SuppressLint("CustomSplashScreen")
 public class SplashScreenFragment extends Fragment {
+    private boolean tokenIsValid;
+
     public interface OnSplashScreenListener {
         void onSplashScreenComplete(boolean isSuccess);
     }
@@ -34,13 +38,14 @@ public class SplashScreenFragment extends Fragment {
     private static final String TAG = "SplashScreenFragment";
     private OnSplashScreenListener listener;
     private TextView statusMessage;
+    private ProgressBar spinner;
     private final Handler handler = new Handler();
     private int retryCount = 0;
     private final int MAX_RETRY = 3;
     private ApiService apiService;
 
     @Override
-    public void onAttach(@NonNull Context context) {
+    public void onAttach(@NotNull Context context) {
         super.onAttach(context);
         if (context instanceof OnSplashScreenListener) {
             listener = (OnSplashScreenListener) context;
@@ -53,8 +58,7 @@ public class SplashScreenFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_splash_screen, container, false);
         statusMessage = view.findViewById(R.id.textViewMessage);
-        ProgressBar spinner = view.findViewById(R.id.spinner);
-        spinner.setVisibility(View.VISIBLE);
+        spinner = view.findViewById(R.id.spinner);
         apiService = RetrofitClient.getApiService();
         performChecksSequentially();
         return view;
@@ -65,7 +69,7 @@ public class SplashScreenFragment extends Fragment {
     }
 
     private void checkNetworkConnection() {
-        statusMessage.setText("Checking internet connection...");
+        statusMessage.setText(R.string.checking_internet_connection);
         handler.postDelayed(() -> {
             if (isAdded()) {
                 ConnectivityManager cm = (ConnectivityManager) requireActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -74,11 +78,12 @@ public class SplashScreenFragment extends Fragment {
                     retryCount = 0;
                     checkServerConnection();
                 } else {
-                    statusMessage.setText("No Internet Connection. Please check your connection.");
+                    statusMessage.setText(R.string.no_internet_connection);
                     if (retryCount < MAX_RETRY) {
                         retryChecks();
                     } else {
-                        statusMessage.setText("Failed after multiple attempts. Please try again later.");
+                        statusMessage.setText(R.string.failed_multiple_attempts);
+                        spinner.setVisibility(View.GONE);
                     }
                 }
             }
@@ -86,21 +91,22 @@ public class SplashScreenFragment extends Fragment {
     }
 
     private void checkServerConnection() {
-        statusMessage.setText("Checking server connection...");
+        statusMessage.setText(R.string.checking_server_connection);
         handler.postDelayed(() -> {
             if (isAdded()) {
-                apiService.checkServerConnection().enqueue(new Callback<ApiResponse>() {
+                apiService.checkServerConnection().enqueue(new Callback<>() {
                     @Override
                     public void onResponse(@NonNull Call<ApiResponse> call, @NonNull Response<ApiResponse> response) {
                         if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
                             retryCount = 0;
                             checkToken();
                         } else {
-                            statusMessage.setText("Server Connection Failed. Please try again later.");
+                            statusMessage.setText(R.string.server_connection_failed);
                             if (retryCount < MAX_RETRY) {
                                 retryChecks();
                             } else {
-                                statusMessage.setText("Failed after multiple attempts. Please try again later.");
+                                statusMessage.setText(R.string.failed_multiple_attempts);
+                                spinner.setVisibility(View.GONE);
                             }
                         }
                     }
@@ -108,11 +114,12 @@ public class SplashScreenFragment extends Fragment {
                     @Override
                     public void onFailure(@NonNull Call<ApiResponse> call, @NonNull Throwable t) {
                         Log.e(TAG, "Server connection failed: " + t.getMessage());
-                        statusMessage.setText("Server Connection Failed: " + t.getMessage());
+                        statusMessage.setText(R.string.server_connection_failed);
                         if (retryCount < MAX_RETRY) {
                             retryChecks();
                         } else {
-                            statusMessage.setText("Failed after multiple attempts. Please try again later.");
+                            statusMessage.setText(R.string.failed_multiple_attempts);
+                            spinner.setVisibility(View.GONE);
                         }
                     }
                 });
@@ -121,23 +128,46 @@ public class SplashScreenFragment extends Fragment {
     }
 
     private void checkToken() {
-        statusMessage.setText("Checking token...");
+        statusMessage.setText(R.string.checking_token);
         handler.postDelayed(() -> {
             if (isAdded()) {
                 String token = extractTokenFromCookies();
-                tokenIsValid(token);
-                listener.onSplashScreenComplete(true); // Always true as we're skipping token validation logic modifications
+                if (token != null) {
+                    verifyToken(token);
+                } else {
+                    tokenIsValid = false;
+                    listener.onSplashScreenComplete(tokenIsValid);
+                }
             }
         }, 1000);
     }
 
-    public String extractTokenFromCookies() {
+    private String extractTokenFromCookies() {
         SharedPreferences preferences = requireActivity().getSharedPreferences("AppPrefs", MODE_PRIVATE);
         return preferences.getString("jwt_token", null);
     }
 
-    private void tokenIsValid(String token) {
-        // Stub for token validation
+    private void verifyToken(String token) {
+        TokenRequest tokenRequest = new TokenRequest(token);
+        apiService.verifyToken(tokenRequest).enqueue(new Callback<>() {
+            @Override
+            public void onResponse(@NotNull Call<ApiResponse> call, @NotNull Response<ApiResponse> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                    tokenIsValid = true;
+                } else {
+                    Log.e(TAG, "Failed to verify token: " + response.code());
+                    tokenIsValid = false;
+                }
+                listener.onSplashScreenComplete(tokenIsValid);
+            }
+
+            @Override
+            public void onFailure(@NotNull Call<ApiResponse> call, @NotNull Throwable t) {
+                Log.e(TAG, "Error during token verification: " + t.getMessage());
+                tokenIsValid = false;
+                listener.onSplashScreenComplete(tokenIsValid);
+            }
+        });
     }
 
     private void retryChecks() {

@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#FF6200EE</color>
@@ -10,4 +9,10 @@
     <color name="error_color">#FF0000</color>
     <color name="button_color_default">#FF6200EE</color> <!-- Exemplu de culoare originală -->
     <color name="button_color_disabled">#FFC0C0C0</color> <!-- Culoare gri -->
+
+    <color name="background_color">#FAFAFA</color>
+    <color name="colorPrimary">#6200EE</color>
+    <color name="colorPrimaryDark">#3700B3</color>
+    <color name="buttonColor">#6495ED</color>
+    <color name="colorAccent">#03DAC5</color>
 </resources>

@@ -1,3 +1,60 @@
 <resources>
-    <string name="app_name">frontend</string>
+    <!-- General strings -->
+    <string name="app_name">Frontend</string>
+
+    <!-- DecisionFragment strings -->
+    <string name="login">Login</string>
+    <string name="register">Register</string>
+
+    <!-- SplashScreenFragment strings -->
+    <string name="checking_connection">Checking connection...</string>
+    <string name="checking_internet_connection">Checking internet connection...</string>
+    <string name="no_internet_connection">No Internet Connection. Please check your connection.</string>
+    <string name="failed_multiple_attempts">Failed after multiple attempts. Please try again later.</string>
+    <string name="checking_server_connection">Checking server connection...</string>
+    <string name="server_connection_failed">Server Connection Failed. Please try again later.</string>
+    <string name="checking_token">Checking token...</string>
+
+    <!-- RegisterFragment strings -->
+    <string name="first_name_hint">First Name</string>
+    <string name="last_name_hint">Last Name</string>
+    <string name="email_hint">Email</string>
+    <string name="password_hint">Password</string>
+    <string name="invalid_email">Invalid Email</string>
+    <string name="password_min_length">Password must be at least 8 characters long</string>
+    <string name="registration_failed_code">Registration Failed: %1$d</string>
+    <string name="registration_failed_message">Registration Failed: %1$s</string>
+    <string name="password_tooltip">Minimum 8 characters in length\n- Uppercase Letters\n- Lowercase Letters\n- Numbers\n- Symbols</string>
+    <string name="register_prompt">Don\'t have an account? Register here</string>
+
+    <!-- ConfirmationFragment strings -->
+    <string name="confirmation_message">Please check your email to confirm your registration.</string>
+    <string name="resend_email">Resend Email</string>
+    <string name="resend_successful">Resend successful: %1$s</string>
+    <string name="resend_failed_code">Resend failed: %1$d</string>
+    <string name="resend_failed_message">Resend failed: %1$s</string>
+    <string name="account_check_failed">Account check failed: %1$s</string>
+    <string name="close">Close</string>
+
+    <!-- LoginFragment strings -->
+    <string name="login_failed">Login Failed: %1$s</string>
+    <string name="fields_empty_error">Fields cannot be empty</string>
+    <string name="login_prompt">Already have an account? Login here</string>
+    <string name="authentication_failed_code">Authentication failed. Status code: %1$d</string>
+
+    <!-- WordsFragment strings -->
+    <string name="english_word">English Word</string>
+    <string name="romanian_word">Romanian Word</string>
+
+    <!-- HomeFragment strings -->
+    <string name="home">Home</string>
+    <string name="button_1">Button 1</string>
+    <string name="button_2">Button 2</string>
+    <string name="button_3">Button 3</string>
+    <string name="button_4">Button 4</string>
+    <string name="button_5">Button 5</string>
+
+    <!-- SectionsFragment strings -->
+    <string name="section_text">Section</string>
+    <string name="second_fragment">Second Fragment</string>
 </resources>
